@@ -26,6 +26,7 @@ export default function SlideUp({ children, offset = "0px" }: Props) {
     if (ref.current) {
       observer.observe(ref.current)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref])
 
   return (

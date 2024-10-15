@@ -110,7 +110,7 @@ const ProjectsSection = () => {
         <ul className="list-disc ml-6 mb-4">
           <li>
             <strong>sql_query</strong>: <em>str</em> - SQL query yang ingin dieksekusi. Contoh: 
-            <code>"SELECT * FROM my_table WHERE id = %s"</code>.
+            <code>&quot;SELECT * FROM my_table WHERE id = %s&quot;</code>.
           </li>
           <li>
             <strong>params</strong>: <em>list</em>, optional - Parameter untuk SQL query jika menggunakan placeholders. 
@@ -157,7 +157,7 @@ const ProjectsSection = () => {
         <ul className="list-disc ml-6 mb-4">
           <li>
             <strong>table_name</strong>: <em>str</em> - Nama tabel di mana data akan dimasukkan. Contoh: 
-            <code>"my_table"</code>.
+            <code>&quot;my_table&quot;</code>.
           </li>
           <li>
             <strong>data</strong>: <em>dict</em> - Kunci adalah nama kolom, dan nilai adalah data yang ingin dimasukkan.
@@ -231,7 +231,7 @@ inserted_id = insert_data('my_table', data)`}
         <ul className="list-disc ml-6 mb-4">
           <li>
             <strong>table_name</strong>: <em>str</em> - Nama tabel dari mana data akan diambil. Contoh: 
-            <code>"my_table"</code>.
+            <code>&quot;my_table&quot;</code>.
           </li>
           <li>
             <strong>filters</strong>: <em>dict</em>, optional - Filter untuk menentukan baris yang ingin diambil. 
@@ -307,7 +307,7 @@ result_search = get_data('my_table', search='keyword', search_columns=['column1'
         <ul className="list-disc ml-6 mb-4">
           <li>
             <strong>table_name</strong>: <em>str</em> - Nama tabel yang ingin diperbarui. Contoh: 
-            <code>"my_table"</code>.
+            <code>&quot;my_table&quot;</code>.
           </li>
           <li>
             <strong>data</strong>: <em>dict</em> - Kunci adalah nama kolom yang ingin diperbarui, dan nilai adalah 
@@ -361,7 +361,7 @@ update_success = update_data('my_table', data_to_update, filters)`}
         <ul className="list-disc ml-6 mb-4">
           <li>
             <strong>table_name</strong>: <em>str</em> - Nama tabel dari mana data akan dihapus. Contoh: 
-            <code>"my_table"</code>.
+            <code>&quot;my_table&quot;</code>.
           </li>
           <li>
             <strong>filters</strong>: <em>dict</em> - Filter untuk menentukan baris mana yang akan dihapus. 
