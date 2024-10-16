@@ -72,7 +72,7 @@ const ProjectsSection = () => {
 
       <div className="relative">
       <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">DjangoFushion</h1>
+      <h1 className="text-4xl font-bold mb-8">DjangoFushion!</h1>
       <p className="mb-6">
         Dokumentasi ini menjelaskan beberapa helper functions yang dapat digunakan untuk berinteraksi dengan database
         di proyek Django. Setiap helper memiliki penjelasan mendetail mengenai fungsi, parameter, dan contoh

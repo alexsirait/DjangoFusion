@@ -38,11 +38,11 @@ const AboutSection = () => {
             </li>
             <br />
             <p>
-              Menggunakan django.db.connection dan django.db.transaction, helper ini memberikan kontrol penuh kepada pengembang untuk berinteraksi langsung dengan database. Ini memastikan efisiensi dan fleksibilitas dalam pengelolaan data, serta sangat ideal bagi pengembang yang ingin melakukan optimisasi performa atau menangani query kompleks dengan lebih mudah.
+              Menggunakan django.db.connection dan django.db.transaction, helper ini memberikan kontrol penuh kepada developer untuk berinteraksi langsung dengan database. Ini memastikan efisiensi dan fleksibilitas dalam pengelolaan data, serta sangat ideal bagi developer yang ingin melakukan optimisasi performa atau menangani query kompleks dengan lebih mudah.
             </p>
             <br />
             <p>
-              Dengan fitur ini, pengembang dapat dengan cepat menyesuaikan query sesuai kebutuhan aplikasi, mengurangi waktu pengembangan, dan meningkatkan produktivitas secara keseluruhan. Selain itu, kemampuan untuk menjalankan query yang tidak terbatas pada struktur model memungkinkan eksplorasi lebih dalam terhadap kemampuan database, sehingga menghasilkan solusi yang lebih inovatif dan sesuai dengan kebutuhan bisnis.
+              Dengan fitur ini, developer dapat dengan cepat menyesuaikan query sesuai kebutuhan aplikasi, mengurangi waktu development, dan meningkatkan produktivitas secara keseluruhan. Selain itu, kemampuan untuk menjalankan query yang tidak terbatas pada struktur model memungkinkan eksplorasi lebih dalam terhadap kemampuan database, sehingga menghasilkan solusi yang lebih inovatif dan sesuai dengan kebutuhan bisnis.
             </p>
           </div>
           <div className="text-center md:w-1/2 md:text-left">
