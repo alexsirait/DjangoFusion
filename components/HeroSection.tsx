@@ -44,12 +44,12 @@ const HeroSection = () => {
             </span>
             {/* Bagian pip install dengan fitur salin */}
             <span id="pip-command" className="flex items-center space-x-2">
-              <code className="bg-gray-800 rounded-md p-4 text-white whitespace-nowrap">
+              <code className="bg-gray-800 rounded-md p-2 text-sm md:text-base md:p-4 text-white whitespace-nowrap">
                 pip install djangofusion-dot
               </code>
               <button
                 onClick={handleCopy}
-                className="text-teal-600 bg-gray-800 rounded-md p-4 hover:bg-gray-700 flex items-center"
+                className="text-teal-600 bg-gray-800 rounded-md p-2 text-sm md:text-base md:p-4 hover:bg-gray-700 flex items-center"
               >
                 <i className="fa fa-copy" aria-hidden="true"></i>
                 {copied ? "Copied!" : "Copy"}
