@@ -1,7 +1,7 @@
-# DjangoFusion - Django Database Helper Documentation
+# WsapTO! - Django Database Helper Documentation
 
 <div align="center">
-  <img src="demo/demo.gif" alt="DjangoFusion Demo" width="600px" />
+  <img src="demo/demo.gif" alt="WsapTO! Demo" width="600px" />
   
   [![Next.js](https://img.shields.io/badge/Next.js-13-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
@@ -12,7 +12,7 @@
 
 ## 🚀 Overview
 
-DjangoFusion is a comprehensive documentation site for a powerful Django Database Helper toolkit. This project showcases a collection of utility functions that simplify database operations in Django applications, making development faster and more efficient.
+WsapTO! is a comprehensive documentation site for a powerful Django Database Helper toolkit. This project showcases a collection of utility functions that simplify database operations in Django applications, making development faster and more efficient.
 
 ## ✨ Features
 
@@ -49,8 +49,8 @@ DjangoFusion is a comprehensive documentation site for a powerful Django Databas
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/yourusername/djangofusion.git
-   cd djangofusion
+   git clone https://github.com/alexsirait/WsapTO.git
+   cd WsapTO
    ```
 
 2. Install dependencies
@@ -84,5 +84,5 @@ If you have any questions or suggestions, please open an issue on GitHub.
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <a href="https://github.com/yourusername">Your Name</a></p>
+  <p>Made with ❤️ by <a href="https://github.com/alexsirait">Alex Sirait</a></p>
 </div>
