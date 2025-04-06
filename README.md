@@ -1,7 +1,6 @@
 # WsapTO! - Django Database Helper Documentation
 
 <div align="center">
-  <img src="demo/demo.gif" alt="WsapTO! Demo" width="600px" />
   
   [![Next.js](https://img.shields.io/badge/Next.js-13-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
   [![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)](https://reactjs.org/)
