@@ -40,7 +40,7 @@ const HeroSection = () => {
           </h1>
           <p className="text-lg mt-4 mb-6 md:text-2xl">
             <span className="font-semibold text-teal-600">
-              Innovation in Every Line of Code <br /><br />
+              Focus on the flow, leave the rest – WsapTO, your dev’s loyal best! <br /><br />
             </span>
             {/* Bagian pip install dengan fitur salin */}
             <span id="pip-command" className="flex items-center space-x-2">
