@@ -40,7 +40,7 @@ export default function Navbar() {
             <Link to="home">
             {/* @ts-ignore */}
               <div className="container flex items-center space-x-2">
-                <h2 className="text-2xl font-bold">DjangoFusion</h2>
+                <h2 className="text-2xl font-bold">WsapTO</h2>
               </div>
             </Link>
             <div className="md:hidden">

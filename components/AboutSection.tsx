@@ -1,73 +1,87 @@
 import React from "react"
 import Image from "next/image"
 
-const skills = [
-  { skill: "Database API" },
-  { skill: "Transaction Management" },
-  { skill: "Eksekusi Query SQL" },
-  { skill: "CRUD Operation" },
-  { skill: "Performansi dan Optimisas" },
-  { skill: "Pengelolaan Dat" },
-  { skill: "Explorasi Databas" },
+const features = [
+  {
+    title: "Database Operations",
+    items: [
+      { skill: "Execute Query", description: "Direct SQL query execution with parameters" },
+      { skill: "CRUD Operations", description: "Create, Read, Update, Delete data easily" },
+      { skill: "Transaction Management", description: "Safe database transactions" },
+      { skill: "Multi-DB Support", description: "Work with multiple databases" },
+    ]
+  },
+  {
+    title: "Data Management",
+    items: [
+      { skill: "Data Validation", description: "Request validation and sanitization" },
+      { skill: "File Handling", description: "Secure file upload and management" },
+      { skill: "Rate Limiting", description: "Request rate limiting and caching" },
+      { skill: "Security Features", description: "API key validation and protection" },
+    ]
+  },
+  {
+    title: "Helper Functions",
+    items: [
+      { skill: "Excel Generation", description: "Create Excel reports dynamically" },
+      { skill: "Error Logging", description: "Comprehensive error tracking" },
+      { skill: "Data Aggregation", description: "Sum, count, and aggregate data" },
+      { skill: "URL Processing", description: "URL and query parameter handling" },
+    ]
+  }
 ]
 
 const AboutSection = () => {
   return (
-    <section id="about">
-      <div className="my-12 pb-12 md:pt-16 md:pb-48">
-        <h1 className="text-center font-bold text-4xl">
-          About
-          <hr className="w-6 h-1 mx-auto my-4 bg-teal-500 border-0 rounded"></hr>
-        </h1>
+    <section id="about" className="bg-gradient-to-b from-white to-gray-50 dark:from-stone-900 dark:to-stone-800">
+      <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-base font-semibold text-teal-600 tracking-wide uppercase">COMPREHENSIVE TOOLKIT</h2>
+          <h1 className="mt-1 text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl sm:tracking-tight lg:text-6xl">
+            Django Database Helper
+          </h1>
+          <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500 dark:text-gray-300">
+            A powerful collection of helper functions designed to simplify database operations and enhance Django development.
+          </p>
+        </div>
 
-        <div className="flex flex-col space-y-10 items-stretch justify-center align-top md:space-x-10 md:space-y-0 md:p-4 md:flex-row md:text-left">
-          <div className="md:w-1/2 ">
-            <h1 className="text-center text-2xl font-bold mb-6 md:text-left">
-              Get to know Framework!
-            </h1>
-            <p>
-              Framework ini dirancang untuk memudahkan eksekusi transaksi yang ada di Django. Dengan Framework ini, pengguna dapat:
-            </p>
-            <br />
-            <li>
-              Mengeksekusi query secara langsung, memberikan fleksibilitas dalam menjalankan perintah SQL yang spesifik.
-            </li>
-            <br />
-            <li>
-              Melakukan operasi memasukkan, membaca, memperbarui, dan menghapus data dari tabel database, sehingga memungkinkan pengelolaan data yang lebih efektif dan responsif.
-            </li>
-            <br />
-            <p>
-              Menggunakan django.db.connection dan django.db.transaction, helper ini memberikan kontrol penuh kepada developer untuk berinteraksi langsung dengan database. Ini memastikan efisiensi dan fleksibilitas dalam pengelolaan data, serta sangat ideal bagi developer yang ingin melakukan optimisasi performa atau menangani query kompleks dengan lebih mudah.
-            </p>
-            <br />
-            <p>
-              Dengan fitur ini, developer dapat dengan cepat menyesuaikan query sesuai kebutuhan aplikasi, mengurangi waktu development, dan meningkatkan produktivitas secara keseluruhan. Selain itu, kemampuan untuk menjalankan query yang tidak terbatas pada struktur model memungkinkan eksplorasi lebih dalam terhadap kemampuan database, sehingga menghasilkan solusi yang lebih inovatif dan sesuai dengan kebutuhan bisnis.
-            </p>
+        <div className="mt-16">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {features.map((feature, featureIdx) => (
+              <div key={featureIdx} className="bg-white dark:bg-stone-700 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                <div className="p-6">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white">{feature.title}</h3>
+                  <div className="mt-4 space-y-4">
+                    {feature.items.map((item, itemIdx) => (
+                      <div key={itemIdx} className="flex items-start">
+                        <div className="flex-shrink-0">
+                          <svg className="h-6 w-6 text-teal-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-base font-medium text-gray-900 dark:text-white">{item.skill}</p>
+                          <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">{item.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="text-center md:w-1/2 md:text-left">
-            <h1 className="text-2xl font-bold mb-6">Tech & Feature</h1>
-            <div className="flex flex-wrap flex-row justify-center z-10 md:justify-start">
-              {skills.map((item, idx) => {
-                return (
-                  <p
-                    key={idx}
-                    className="bg-gray-200 px-4 py-2 mr-2 mt-2 text-gray-500 rounded font-semibold"
-                  >
-                    {item.skill}
-                  </p>
-                )
-              })}
-            </div>
-            {/* @ts-ignore */}
-            <Image
-              src="/hero-image.png"
-              alt=""
-              width={200}
-              height={200}
-              className="hidden md:block md:relative md:left-32 md:z-0 rounded-full shadow-2xl"
-            />
-          </div>
+        </div>
+
+        <div className="mt-16 text-center">
+          <a
+            href="#projects"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 transition-colors duration-300"
+          >
+            View Documentation
+            <svg className="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>

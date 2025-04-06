@@ -9,7 +9,7 @@ const HeroSection = () => {
 
   // Fungsi untuk menyalin teks ke clipboard
   const handleCopy = () => {
-    const pipCommand = "pip install djangofusion-dot"; // Teks yang akan disalin
+    const pipCommand = "pip install WsapTO"; // Teks yang akan disalin
     navigator.clipboard.writeText(pipCommand).then(
       () => {
         setCopied(true); // Berhasil menyalin
@@ -36,7 +36,7 @@ const HeroSection = () => {
         </div>
         <div className="md:mt-2 md:w-3/5">
           <h1 className="text-4xl font-bold mt-6 md:mt-0 md:text-7xl">
-            DjangoFusion!
+            WsapTO!
           </h1>
           <p className="text-lg mt-4 mb-6 md:text-2xl">
             <span className="font-semibold text-teal-600">
@@ -45,7 +45,7 @@ const HeroSection = () => {
             {/* Bagian pip install dengan fitur salin */}
             <span id="pip-command" className="flex items-center space-x-2">
               <code className="bg-gray-800 rounded-md p-2 text-sm md:text-base md:p-4 text-white whitespace-nowrap">
-                pip install djangofusion-dot
+                pip install WsapTO
               </code>
               <button
                 onClick={handleCopy}

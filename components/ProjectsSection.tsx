@@ -1,381 +1,659 @@
 "use client";
-import React, { useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import SlideUp from "./SlideUp";
-import { BsGithub, BsArrowUpRightSquare } from "react-icons/bs";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import React from "react";
+import { useState, useEffect } from "react";
+import { FaDatabase, FaShieldAlt, FaFileExcel, FaCode, FaSearch, FaSort, FaFilter, FaChartBar, FaUserShield, FaFileUpload, FaHistory } from "react-icons/fa";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const projects = [
+// Remove Prism type declaration
+// declare global {
+//   interface Window {
+//     Prism?: {
+//       highlightAll: () => void;
+//     };
+//   }
+// }
+
+// Simple syntax highlighter with a different approach
+// const highlightCode = (code: string) => { ... };
+
+const helperDocs = [
   {
-    name: "Thankful Thoughts",
-    description:
-      "ThankfulThoughts is a web app that generates an appreciative sentence of something or someone you are thankful for.",
-    image: "/thankfulthoughts.png",
-    github: "https://github.com/hqasmei/thankful-thoughts",
-    link: "https://thankfulthoughts.io/",
+    category: "Database Operations",
+    icon: <FaDatabase className="h-6 w-6" />,
+    functions: [
+      {
+        name: "execute_query",
+        description: "Execute raw SQL queries with parameters",
+        example: `execute_query(
+  sql_query="SELECT * FROM users WHERE status = %s",
+  params=['active'],
+  db_alias='default'
+)`,
+        params: [
+          { name: "sql_query", type: "str", desc: "SQL query to execute" },
+          { name: "params", type: "tuple/list", desc: "Query parameters" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "insert_data",
+        description: "Insert data into a table",
+        example: `insert_data(
+  table_name="users",
+  data={"name": "John", "email": "john@example.com"},
+  db_alias='default'
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Target table name" },
+          { name: "data", type: "dict", desc: "Data to insert" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "get_data",
+        description: "Read data from a table with filters",
+        example: `get_data(
+  table_name="users",
+  filters={"status": "active"},
+  search="john",
+  search_columns=["name", "email"]
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "search", type: "str", desc: "Search keyword" },
+          { name: "columns", type: "str/list", desc: "Columns to select" }
+        ]
+      },
+      {
+        name: "update_data",
+        description: "Update data in a table",
+        example: `update_data(
+  table_name="users",
+  data={"status": "inactive"},
+  filters={"id": 123},
+  db_alias='default'
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Target table name" },
+          { name: "data", type: "dict", desc: "Data to update" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "delete_data",
+        description: "Delete data from a table",
+        example: `delete_data(
+  table_name="users",
+  filters={"id": 123},
+  db_alias='default'
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Target table name" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "insert_get_id_data",
+        description: "Insert data and return the inserted row's ID",
+        example: `insert_get_id_data(
+  table_name="users",
+  data={"name": "John", "email": "john@example.com"},
+  column_id="id",
+  db_alias='default'
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Target table name" },
+          { name: "data", type: "dict", desc: "Data to insert" },
+          { name: "column_id", type: "str", desc: "ID column name" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      }
+    ]
   },
   {
-    name: "PlatoIO",
-    description: "PlatoIO is a to do list app that built using the PERN stack.",
-    image: "/platoio.png",
-    github: "https://github.com/hqasmei/platoio",
-    link: "https://platoio.com/register",
+    category: "Data Retrieval",
+    icon: <FaSearch className="h-6 w-6" />,
+    functions: [
+      {
+        name: "first_data",
+        description: "Get the first row of data from a table",
+        example: `first_data(
+  table_name="users",
+  filters={"status": "active"},
+  columns="*",
+  order_by="created_at DESC"
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "columns", type: "str/list", desc: "Columns to select" },
+          { name: "order_by", type: "str/list", desc: "Order by clause" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "last_data",
+        description: "Get the last row of data from a table",
+        example: `last_data(
+  table_name="users",
+  filters={"status": "active"},
+  order_by_column="id",
+  columns="*"
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "order_by_column", type: "str", desc: "Column to order by" },
+          { name: "columns", type: "str/list", desc: "Columns to select" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "count_data",
+        description: "Get the count of rows in a table",
+        example: `count_data(
+  table_name="users",
+  filters={"status": "active"}
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "pluck_data",
+        description: "Get values from a specific column in a table",
+        example: `pluck_data(
+  table_name="users",
+  column_name="email",
+  filters={"status": "active"}
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "column_name", type: "str", desc: "Column to pluck" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "distinct_data",
+        description: "Get distinct values from a specific column",
+        example: `distinct_data(
+  table_name="users",
+  column_name="status",
+  filters={"active": True}
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "column_name", type: "str", desc: "Column to get distinct values from" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "get_value",
+        description: "Get a single value from a table",
+        example: `get_value(
+  table_name="users",
+  column_name="email",
+  filters={"id": 123},
+  type="UUID"
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "column_name", type: "str", desc: "Column to get value from" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "type", type: "str", desc: "Type of the value (e.g., 'UUID')" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      }
+    ]
   },
   {
-    name: "Kator Family Photos",
-    description:
-      "Kator Family Photos is a photos and video digitization service in the LA area.",
-    image: "/familyphotos.png",
-    github: "https://github.com/hqasmei/katorfamilyphotos",
-    link: "https://katorfamilyphotos.com/",
+    category: "Data Manipulation",
+    icon: <FaSort className="h-6 w-6" />,
+    functions: [
+      {
+        name: "order_by_data",
+        description: "Get ordered data from a table",
+        example: `order_by_data(
+  table_name="users",
+  order_column="created_at",
+  ascending=False,
+  filters={"status": "active"},
+  limit=10,
+  offset=0
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "order_column", type: "str", desc: "Column to order by" },
+          { name: "ascending", type: "bool", desc: "True for ascending, False for descending" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "limit", type: "int", desc: "Limit number of records" },
+          { name: "offset", type: "int", desc: "Offset for pagination" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "exists_data",
+        description: "Check if data exists in a table",
+        example: `exists_data(
+  table_name="users",
+  filters={"email": "john@example.com"},
+  id_column="id",
+  exclude_id=123
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "id_column", type: "str", desc: "ID column name" },
+          { name: "exclude_id", type: "int", desc: "ID to exclude from check" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "fetch_records_with_conditions",
+        description: "Fetch records based on null/not null conditions",
+        example: `fetch_records_with_conditions(
+  table_name="users",
+  null_column="deleted_at",
+  not_null_column="email",
+  additional_filters={"status": "active"}
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "null_column", type: "str", desc: "Column to check for NULL" },
+          { name: "not_null_column", type: "str", desc: "Column to check for NOT NULL" },
+          { name: "additional_filters", type: "dict", desc: "Additional filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      },
+      {
+        name: "sum_data",
+        description: "Sum data from a column in a table",
+        example: `sum_data(
+  table_name="orders",
+  column_name="total_amount",
+  filters={"status": "completed"}
+)`,
+        params: [
+          { name: "table_name", type: "str", desc: "Source table name" },
+          { name: "column_name", type: "str", desc: "Column to sum" },
+          { name: "filters", type: "dict", desc: "Filter conditions" },
+          { name: "db_alias", type: "str", desc: "Database alias" }
+        ]
+      }
+    ]
   },
   {
-    name: "ALEK JAHAT + GALAK",
-    description:
-      "ALEK TUKANG MEREPET",
-    image: "/familyphotos.png",
-    github: "#",
-    link: "#",
+    category: "Security & Validation",
+    icon: <FaShieldAlt className="h-6 w-6" />,
+    functions: [
+      {
+        name: "validate_request",
+        description: "Validate incoming request data",
+        example: `validate_request(data, {
+  "email": "required|email",
+  "age": "required|numeric|min:18"
+})`,
+        params: [
+          { name: "data", type: "dict", desc: "Request data to validate" },
+          { name: "rules", type: "dict", desc: "Validation rules" }
+        ]
+      },
+      {
+        name: "validate_method",
+        description: "Validate HTTP method and apply rate limiting",
+        example: `validate_method(
+  request,
+  required_method="POST",
+  require_api_key=True,
+  rate_limit=60,
+  time_window=60,
+  method_specific=True,
+  block_bots=True
+)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" },
+          { name: "required_method", type: "str", desc: "Allowed HTTP method" },
+          { name: "require_api_key", type: "bool", desc: "Require API key" },
+          { name: "rate_limit", type: "int", desc: "Max requests per time window" },
+          { name: "time_window", type: "int", desc: "Time window in seconds" },
+          { name: "method_specific", type: "bool", desc: "Apply rate limit per method" },
+          { name: "block_bots", type: "bool", desc: "Block suspicious user agents" }
+        ]
+      },
+      {
+        name: "validate_user_agent",
+        description: "Validate user agent header",
+        example: `validate_user_agent(request)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" }
+        ]
+      },
+      {
+        name: "validate_json_payload",
+        description: "Validate JSON payload from request",
+        example: `validate_json_payload(request)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" }
+        ]
+      },
+      {
+        name: "validate_file_upload",
+        description: "Validate file uploads",
+        example: `validate_file_upload(request)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" }
+        ]
+      },
+      {
+        name: "contains_malicious_input",
+        description: "Check for malicious input in data",
+        example: `contains_malicious_input(data)`,
+        params: [
+          { name: "data", type: "Any", desc: "Data to check for malicious content" }
+        ]
+      },
+      {
+        name: "jwt_uuid_conveter",
+        description: "Convert JWT UUID to user ID",
+        example: `user_id = jwt_uuid_conveter(uuid)`,
+        params: [
+          { name: "uuid", type: "str", desc: "User UUID from JWT" }
+        ]
+      }
+    ]
   },
+  {
+    category: "File Operations",
+    icon: <FaFileExcel className="h-6 w-6" />,
+    functions: [
+      {
+        name: "save_uploaded_file",
+        description: "Save and process uploaded files securely",
+        example: `save_uploaded_file(
+  file=request.FILES['document'],
+  upload_dir='uploads'
+)`,
+        params: [
+          { name: "file", type: "UploadedFile", desc: "File object" },
+          { name: "upload_dir", type: "str", desc: "Target directory" }
+        ]
+      },
+      {
+        name: "generate_custom_excel",
+        description: "Generate Excel file with custom formatting",
+        example: `generate_custom_excel(
+  data=rows,
+  headers=["ID", "Name", "Email"],
+  title="User Report"
+)`,
+        params: [
+          { name: "data", type: "list", desc: "Data rows for Excel" },
+          { name: "headers", type: "list", desc: "Column headers" },
+          { name: "title", type: "str", desc: "Report title" }
+        ]
+      },
+      {
+        name: "generate_excel_from_template",
+        description: "Generate Excel from template with filters",
+        example: `generate_excel_from_template(
+  data=sheets_data,
+  url=request.build_absolute_uri(),
+  output_file_name="report.xlsx"
+)`,
+        params: [
+          { name: "data", type: "list", desc: "Data for Excel sheets" },
+          { name: "url", type: "str", desc: "URL for filter parameters" },
+          { name: "output_file_name", type: "str", desc: "Output file name" }
+        ]
+      }
+    ]
+  },
+  {
+    category: "Utility Functions",
+    icon: <FaCode className="h-6 w-6" />,
+    functions: [
+      {
+        name: "log_exception",
+        description: "Log exceptions with detailed context",
+        example: `log_exception(request, exception)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" },
+          { name: "exception", type: "Exception", desc: "Exception object" }
+        ]
+      },
+      {
+        name: "get_client_ip",
+        description: "Get client IP address from request",
+        example: `client_ip = get_client_ip(request)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" }
+        ]
+      },
+      {
+        name: "generate_request_signature",
+        description: "Generate unique signature for request",
+        example: `signature = generate_request_signature(request, endpoint)`,
+        params: [
+          { name: "request", type: "HttpRequest", desc: "Django request object" },
+          { name: "endpoint", type: "str", desc: "Request endpoint" }
+        ]
+      }
+    ]
+  }
 ];
 
 const ProjectsSection = () => {
-  const scrollRef = useRef(null);
+  const [selectedCategory, setSelectedCategory] = useState(helperDocs[0].category);
+  const [selectedFunction, setSelectedFunction] = useState(helperDocs[0].functions[0]);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const scrollLeft = () => {
-    if (scrollRef.current) {
-      {/* @ts-ignore */}
-      scrollRef.current.scrollBy({
-        left: -300,
-        behavior: "smooth",
-      });
-    }
-  };
+  // Filter functions based on search term
+  const filteredCategories = helperDocs.map(category => ({
+    ...category,
+    functions: category.functions.filter(func => 
+      func.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      func.description.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })).filter(category => category.functions.length > 0);
 
-  const scrollRight = () => {
-    if (scrollRef.current) {
-      {/* @ts-ignore */}
-      scrollRef.current.scrollBy({
-        left: 300, // Geser ke kanan 300px
-        behavior: "smooth",
-      });
+  // Get the first available category and function when search results change
+  React.useEffect(() => {
+    if (filteredCategories.length > 0) {
+      setSelectedCategory(filteredCategories[0].category);
+      setSelectedFunction(filteredCategories[0].functions[0]);
     }
-  };
+  }, [searchTerm]);
+
+  // Remove Prism.js loading code
+  // useEffect(() => {
+  //   // Load Prism CSS
+  //   const link = document.createElement('link');
+  //   link.rel = 'stylesheet';
+  //   link.href = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css';
+  //   document.head.appendChild(link);
+  // 
+  //   // Load Prism JS
+  //   const script = document.createElement('script');
+  //   script.src = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js';
+  //   script.async = true;
+  //   script.onload = () => {
+  //     // Load Python language support
+  //     const pythonScript = document.createElement('script');
+  //     pythonScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js';
+  //     pythonScript.async = true;
+  //     document.body.appendChild(pythonScript);
+  //   };
+  //   document.body.appendChild(script);
+  // 
+  //   return () => {
+  //     // Clean up
+  //     document.head.removeChild(link);
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
+  // 
+  // // Apply syntax highlighting when selected function changes
+  // useEffect(() => {
+  //   if (window.Prism) {
+  //     window.Prism.highlightAll();
+  //   }
+  // }, [selectedFunction]);
 
   return (
-    <section id="projects">
-      <h1 className="my-10 text-center font-bold text-4xl">
-        Docs
-        <hr className="w-6 h-1 mx-auto my-4 bg-teal-500 border-0 rounded"></hr>
-      </h1>
+    <section id="projects" className="bg-gray-50 dark:bg-stone-800">
+      <div className="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="text-base font-semibold text-teal-600 tracking-wide uppercase">Documentation</h2>
+          <p className="mt-2 text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+            Helper Functions Reference
+          </p>
+          <p className="mt-4 max-w-2xl mx-auto text-xl text-gray-500 dark:text-gray-300">
+            Comprehensive guide to using the Django Database Helper functions
+          </p>
+        </div>
 
-      <div className="relative">
-      <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">DjangoFushion!</h1>
-      <p className="mb-6">
-        Dokumentasi ini menjelaskan beberapa helper functions yang dapat digunakan untuk berinteraksi dengan database
-        di proyek Django. Setiap helper memiliki penjelasan mendetail mengenai fungsi, parameter, dan contoh
-        penggunaan.
-      </p>
+        {/* Search Bar */}
+        <div className="mt-8 max-w-xl mx-auto">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search functions..."
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500 dark:bg-stone-700 dark:text-white"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+              <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">1. Execute Query</h2>
-        <p className="mb-4">
-          Fungsi <strong>execute_query</strong> digunakan untuk menjalankan SQL query mentah dan mengembalikan hasilnya
-          sebagai daftar dictionary. Ini berguna untuk query yang kompleks atau ketika ORM Django tidak mencukupi.
-        </p>
-        <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`def execute_query(sql_query, params=None):
-    """
-    Executes a raw SQL query and returns the results as a list of dictionaries.
-    
-    Parameters:
-    sql_query (str): The SQL query to execute.
-    params (list, optional): A list of parameters to bind to the query.
-    
-    Returns:
-    list: A list of dictionaries representing the rows returned by the query.
-    """
-    try:
-        with connection.cursor() as cursor:
-            cursor.execute(sql_query, params or [])
-            columns = [col[0] for col in cursor.description]  # Get column names
-            rows = cursor.fetchall()  # Fetch all rows
-        return [dict(zip(columns, row)) for row in rows]  # Convert to list of dictionaries
-    except Exception as e:
-        raise Exception(f"Error executing query: {e}")`}
-        </pre>
-        <h3 className="text-xl font-semibold mt-4">Parameters:</h3>
-        <ul className="list-disc ml-6 mb-4">
-          <li>
-            <strong>sql_query</strong>: <em>str</em> - SQL query yang ingin dieksekusi. Contoh: 
-            <code>&quot;SELECT * FROM my_table WHERE id = %s&quot;</code>.
-          </li>
-          <li>
-            <strong>params</strong>: <em>list</em>, optional - Parameter untuk SQL query jika menggunakan placeholders. 
-            Contoh: <code>[1]</code> untuk menggantikan placeholder.
-          </li>
-        </ul>
-        <h3 className="text-xl font-semibold mt-4">Contoh Penggunaan:</h3>
-        <pre className="bg-gray-700 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`result = execute_query("SELECT * FROM my_table WHERE id = %s", [1])`}
-        </pre>
-        <p className="mb-4">Hasil <code>result</code> akan menjadi list dictionary yang berisi data dari baris yang sesuai.</p>
-      </section>
+        <div className="mt-12 grid grid-cols-1 gap-8 lg:grid-cols-4">
+          {/* Sidebar Navigation */}
+          <div className="lg:col-span-1">
+            <nav className="space-y-1">
+              {filteredCategories.map((category) => (
+                <button
+                  key={category.category}
+                  onClick={() => {
+                    setSelectedCategory(category.category);
+                    setSelectedFunction(category.functions[0]);
+                  }}
+                  className={`w-full text-left px-3 py-2 rounded-md flex items-center space-x-3 ${
+                    selectedCategory === category.category
+                      ? "bg-teal-50 text-teal-700 dark:bg-teal-900 dark:text-teal-100"
+                      : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-stone-700"
+                  }`}
+                >
+                  <span className="flex-shrink-0">{category.icon}</span>
+                  <span className="text-sm font-medium">{category.category}</span>
+                  <span className="ml-auto bg-gray-200 dark:bg-stone-600 text-gray-700 dark:text-gray-200 text-xs rounded-full px-2 py-1">
+                    {category.functions.length}
+                  </span>
+                </button>
+              ))}
+            </nav>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">2. Insert Data</h2>
-        <p className="mb-4">
-          Fungsi <strong>insert_data</strong> digunakan untuk memasukkan data ke dalam tabel. Fungsi ini mengembalikan
-          ID dari baris yang dimasukkan, sehingga Anda dapat mengetahui entri baru yang telah dibuat.
-        </p>
-        <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`def insert_data(table_name, data):
-    """
-    Inserts data into the specified table and returns the ID of the inserted row.
+            <div className="mt-8">
+              <div className="space-y-1">
+                {filteredCategories
+                  .find((c) => c.category === selectedCategory)
+                  ?.functions.map((func) => (
+                    <button
+                      key={func.name}
+                      onClick={() => setSelectedFunction(func)}
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md ${
+                        selectedFunction.name === func.name
+                          ? "bg-teal-50 text-teal-700 dark:bg-teal-900 dark:text-teal-100"
+                          : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-stone-700"
+                      }`}
+                    >
+                      {func.name}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          </div>
 
-    Parameters:
-    table_name (str): The name of the table to insert data into.
-    data (dict): A dictionary where keys are column names and values are the data to insert.
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <div className="bg-white dark:bg-stone-700 shadow-lg rounded-lg overflow-hidden">
+              <div className="px-6 py-8">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {selectedFunction.name}
+                </h3>
+                <p className="mt-2 text-gray-600 dark:text-gray-300">
+                  {selectedFunction.description}
+                </p>
 
-    Returns:
-    int: The ID of the inserted row.
-    """
-    try:
-        columns = ', '.join(data.keys())
-        placeholders = ', '.join(['%s'] * len(data))  # Prepare placeholders
-        sql_query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-        with transaction.atomic():  # Ensure atomic transaction
-            with connection.cursor() as cursor:
-                cursor.execute(sql_query, list(data.values()))  # Execute the insert
-                return cursor.lastrowid  # Return the last inserted ID
-    except Exception as e:
-        raise Exception(f"Error in insert: {e}")`}
-        </pre>
-        <h3 className="text-xl font-semibold mt-4">Parameters:</h3>
-        <ul className="list-disc ml-6 mb-4">
-          <li>
-            <strong>table_name</strong>: <em>str</em> - Nama tabel di mana data akan dimasukkan. Contoh: 
-            <code>&quot;my_table&quot;</code>.
-          </li>
-          <li>
-            <strong>data</strong>: <em>dict</em> - Kunci adalah nama kolom, dan nilai adalah data yang ingin dimasukkan.
-            Contoh: 
-            <code>{"{'column1': 'value1', 'column2': 'value2'}"}</code>.
-          </li>
-        </ul>
-        <h3 className="text-xl font-semibold mt-4">Contoh Penggunaan:</h3>
-        <pre className="bg-gray-700 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`data = {
-    'column1': 'value1',
-    'column2': 'value2',
-}
-inserted_id = insert_data('my_table', data)`}
-        </pre>
-        <p className="mb-4">Variabel <code>inserted_id</code> akan berisi ID dari baris yang baru dimasukkan.</p>
-      </section>
+                <div className="mt-6">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white">Parameters</h4>
+                  <div className="mt-4 border dark:border-gray-600 rounded-md overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                      <thead className="bg-gray-50 dark:bg-stone-800">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Type
+                          </th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Description
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white dark:bg-stone-700 divide-y divide-gray-200 dark:divide-gray-600">
+                        {selectedFunction.params.map((param) => (
+                          <tr key={param.name}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                              {param.name}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                              {param.type}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                              {param.desc}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">3. Get Data</h2>
-        <p className="mb-4">
-          Fungsi <strong>get_data</strong> digunakan untuk membaca data dari tabel, dengan dukungan filter, pencarian,
-          limit, dan offset. Ini sangat berguna untuk paginasi dan pencarian data.
-        </p>
-        <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`def get_data(table_name, filters=None, search=None, search_columns=None, columns='*', limit=None, offset=None):
-    """
-    Retrieves data from the specified table with optional filtering, searching, and pagination.
-
-    Parameters:
-    table_name (str): The name of the table to retrieve data from.
-    filters (dict, optional): Filters to apply to the query (e.g., {'column_name': 'value'}).
-    search (str, optional): A keyword to search for in the specified columns.
-    search_columns (list, optional): Columns to search for the keyword.
-    columns (str or list, optional): Columns to retrieve (default: '*').
-    limit (int, optional): Limit the number of records retrieved.
-    offset (int, optional): Offset for pagination.
-
-    Returns:
-    list: A list of dictionaries representing the rows returned by the query.
-    """
-    try:
-        if isinstance(columns, list):
-            columns = ', '.join(columns)  # Join columns if provided as a list
-        sql_query = f"SELECT {columns} FROM {table_name}"
-        conditions = []
-        values = []
-        if filters:
-            conditions += [f"{key}=%s" for key in filters.keys()]  # Add filters to conditions
-            values += list(filters.values())
-        if search and search_columns:
-            search_conditions = [f"{col}::text ILIKE %s" for col in search_columns]  # Prepare search conditions
-            conditions.append(f"({' OR '.join(search_conditions)})")  # Combine with OR
-            values += [f"%{search}%"] * len(search_columns)  # Prepare search values
-        if conditions:
-            where_clause = ' WHERE ' + ' AND '.join(conditions)  # Create WHERE clause
-            sql_query += where_clause
-        if limit:
-            sql_query += f" LIMIT {limit}"  # Add LIMIT clause
-        if offset:
-            sql_query += f" OFFSET {offset}"  # Add OFFSET clause
-        with connection.cursor() as cursor:
-            cursor.execute(sql_query, values)  # Execute query with values
-            columns = [col[0] for col in cursor.description]  # Get column names
-            rows = cursor.fetchall()  # Fetch all rows
-        return [dict(zip(columns, row)) for row in rows]  # Convert to list of dictionaries
-    except Exception as e:
-        raise Exception(f"Error in read: {e}")`}
-        </pre>
-        <h3 className="text-xl font-semibold mt-4">Parameters:</h3>
-        <ul className="list-disc ml-6 mb-4">
-          <li>
-            <strong>table_name</strong>: <em>str</em> - Nama tabel dari mana data akan diambil. Contoh: 
-            <code>&quot;my_table&quot;</code>.
-          </li>
-          <li>
-            <strong>filters</strong>: <em>dict</em>, optional - Filter untuk menentukan baris yang ingin diambil. 
-            Contoh: 
-            <code>{"{'column_name': 'value'}"}</code>.
-          </li>
-          <li>
-            <strong>search</strong>: <em>str</em>, optional - Kata kunci untuk pencarian dalam kolom tertentu.
-          </li>
-          <li>
-            <strong>search_columns</strong>: <em>list</em>, optional - Kolom yang akan dicari berdasarkan kata kunci.
-          </li>
-          <li>
-            <strong>columns</strong>: <em>str</em> atau <em>list</em>, optional - Kolom yang ingin diambil, default 
-            <code>*</code>.
-          </li>
-          <li>
-            <strong>limit</strong>: <em>int</em>, optional - Batas jumlah baris yang akan diambil.
-          </li>
-          <li>
-            <strong>offset</strong>: <em>int</em>, optional - Offset untuk paginasi.
-          </li>
-        </ul>
-        <h3 className="text-xl font-semibold mt-4">Contoh Penggunaan:</h3>
-        <pre className="bg-gray-700 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`# Mengambil semua data
-result_all = get_data('my_table')
-
-# Mengambil data dengan filter
-result_filtered = get_data('my_table', filters={'column1': 'value1'})
-
-# Mengambil data dengan pencarian dan limit
-result_search = get_data('my_table', search='keyword', search_columns=['column1', 'column2'], limit=10)`}
-        </pre>
-        <p className="mb-4">
-          <code>result_all</code>, <code>result_filtered</code>, dan <code>result_search</code> akan berisi hasil 
-          yang sesuai berdasarkan query yang dijalankan.
-        </p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">4. Update Data</h2>
-        <p className="mb-4">
-          Fungsi <strong>update_data</strong> digunakan untuk memperbarui data dalam tabel berdasarkan filter. 
-          Fungsi ini tidak mengembalikan nilai tetapi akan mengeksekusi operasi update pada database.
-        </p>
-        <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`def update_data(table_name, data, filters):
-    """
-    Updates data in the specified table based on the given filters.
-
-    Parameters:
-    table_name (str): The name of the table to update.
-    data (dict): A dictionary where keys are column names to update and values are the new values.
-    filters (dict): A dictionary where keys are column names for filtering the rows to update.
-
-    Returns:
-    bool: True if the update was successful, False otherwise.
-    """
-    try:
-        set_clause = ', '.join([f"{key}=%s" for key in data.keys()])  # Prepare SET clause
-        where_clause = ' AND '.join([f"{key}=%s" for key in filters.keys()])  # Prepare WHERE clause
-        sql_query = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
-        values = list(data.values()) + list(filters.values())  # Combine values for execution
-        with transaction.atomic():  # Ensure atomic transaction
-            with connection.cursor() as cursor:
-                cursor.execute(sql_query, values)  # Execute update
-        return True  # Indicate success
-    except Exception as e:
-        raise Exception(f"Error in update: {e}")`}
-        </pre>
-        <h3 className="text-xl font-semibold mt-4">Parameters:</h3>
-        <ul className="list-disc ml-6 mb-4">
-          <li>
-            <strong>table_name</strong>: <em>str</em> - Nama tabel yang ingin diperbarui. Contoh: 
-            <code>&quot;my_table&quot;</code>.
-          </li>
-          <li>
-            <strong>data</strong>: <em>dict</em> - Kunci adalah nama kolom yang ingin diperbarui, dan nilai adalah 
-            nilai baru. Contoh: 
-            <code>{"{'column1': 'new_value'}"}</code>.
-          </li>
-          <li>
-            <strong>filters</strong>: <em>dict</em> - Filter untuk menentukan baris mana yang akan diperbarui.
-            Contoh: 
-            <code>{"{'id': 1}"}</code>.
-          </li>
-        </ul>
-        <h3 className="text-xl font-semibold mt-4">Contoh Penggunaan:</h3>
-        <pre className="bg-gray-700 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`data_to_update = {'column1': 'updated_value'}
-filters = {'id': 1}
-update_success = update_data('my_table', data_to_update, filters)`}
-        </pre>
-        <p className="mb-4">Variabel <code>update_success</code> akan berisi <code>True</code> jika pembaruan berhasil.</p>
-      </section>
-
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">5. Delete Data</h2>
-        <p className="mb-4">
-          Fungsi <strong>delete_data</strong> digunakan untuk menghapus data dari tabel berdasarkan filter tertentu. 
-          Ini berguna untuk mengelola entri yang tidak diperlukan lagi dalam database.
-        </p>
-        <pre className="bg-gray-800 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`def delete_data(table_name, filters):
-    """
-    Deletes rows from the specified table based on the given filters.
-
-    Parameters:
-    table_name (str): The name of the table from which to delete data.
-    filters (dict): A dictionary where keys are column names for filtering the rows to delete.
-
-    Returns:
-    bool: True if the deletion was successful, False otherwise.
-    """
-    try:
-        where_clause = ' AND '.join([f"{key}=%s" for key in filters.keys()])  # Prepare WHERE clause
-        sql_query = f"DELETE FROM {table_name} WHERE {where_clause}"
-        with transaction.atomic():  # Ensure atomic transaction
-            with connection.cursor() as cursor:
-                cursor.execute(sql_query, list(filters.values()))  # Execute delete
-        return True  # Indicate success
-    except Exception as e:
-        raise Exception(f"Error in delete: {e}")`}
-        </pre>
-        <h3 className="text-xl font-semibold mt-4">Parameters:</h3>
-        <ul className="list-disc ml-6 mb-4">
-          <li>
-            <strong>table_name</strong>: <em>str</em> - Nama tabel dari mana data akan dihapus. Contoh: 
-            <code>&quot;my_table&quot;</code>.
-          </li>
-          <li>
-            <strong>filters</strong>: <em>dict</em> - Filter untuk menentukan baris mana yang akan dihapus. 
-            Contoh: 
-            <code>{"{'id': 1}"}</code>.
-          </li>
-        </ul>
-        <h3 className="text-xl font-semibold mt-4">Contoh Penggunaan:</h3>
-        <pre className="bg-gray-700 text-white p-4 rounded-md overflow-x-scroll overflow-y-hidden">
-{`delete_success = delete_data('my_table', {'id': 1})`}
-        </pre>
-        <p className="mb-4">Variabel <code>delete_success</code> akan berisi <code>True</code> jika penghapusan berhasil.</p>
-      </section>
-    </div>
+                <div className="mt-6">
+                  <h4 className="text-lg font-medium text-gray-900 dark:text-white">Example Usage</h4>
+                  <div className="mt-4">
+                    <SyntaxHighlighter 
+                      language="python" 
+                      style={tomorrow}
+                      customStyle={{
+                        borderRadius: '0.375rem',
+                        padding: '1rem',
+                        fontSize: '0.875rem',
+                        backgroundColor: '#1f2937',
+                        margin: 0
+                      }}
+                    >
+                      {selectedFunction.example}
+                    </SyntaxHighlighter>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
